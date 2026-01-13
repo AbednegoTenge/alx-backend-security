@@ -8,7 +8,7 @@ class LogRequestDetailsMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        ip_address = get_client_ip(request)
+        ip_address, _ = get_client_ip(request)
         path = request.path
 
         log = RequestLog(
@@ -28,9 +28,10 @@ class BlacklistMiddleware:
 
     
     def __call__(self, request):
-        ip_address = get_client_ip(request)
+        ip_address, _ = get_client_ip(request)
         
-        BlockedIP.objects.create(ip_address=ip_address)
+        if BlockedIP.objects.filter(ip_address=ip_address).exists():
+            raise PermissionDenied("Your IP has been blocked")
 
         response = self.get_response(request)
         return response
