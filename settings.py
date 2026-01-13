@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'alx_backend_security.ip_tracking',
-    'rest_framework'
+    'rest_framework',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -112,7 +113,18 @@ CACHES = {
     }
 }
 
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'  # or your Redis server
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
+CELERY_BEAT_SCHEDULE = {}
 
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'flag_suspicious_ips_hourly': {
+        'task': 'ip_tracking.tasks.flag_suspicious_ips',
+        'schedule': crontab(minute=0),  # Every hour on the hour
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

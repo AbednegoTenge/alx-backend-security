@@ -11,3 +11,8 @@ class RequestLog(models.Model):
 
 class BlockedIP(models.Model):
     ip_address = models.CharField(max_length=200)
+
+
+class SuspiciousIP(models.Model):
+    ip_address = models.CharField(max_length=200)
+    reason = models.TextField()
