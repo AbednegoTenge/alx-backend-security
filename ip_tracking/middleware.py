@@ -1,7 +1,10 @@
 from .models import RequestLog, BlockedIP
 from ipware import get_client_ip
 from django.core.exceptions import PermissionDenied
+from django.core.cache import cache
 
+
+CACHE_TTL = 60 * 60 * 24
 class LogRequestDetailsMiddleware:
 
     def __init__(self, get_response):
@@ -11,7 +14,12 @@ class LogRequestDetailsMiddleware:
     def __call__(self, request):
         ip_address, _ = get_client_ip(request)
         path = request.path
-        location = getattr(request, 'geolocation', {}) or {}
+        
+        cache_key = f"ipaddress:{ip_address}"
+        location = cache.get(cache_key)
+        if location is None:
+            location = getattr(request, 'geolocation', {}) or {}
+            cache.set(cache_key, location, CACHE_TTL)
 
         log = RequestLog(
             ip_address=ip_address,
