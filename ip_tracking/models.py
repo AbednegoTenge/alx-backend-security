@@ -8,3 +8,6 @@ class RequestLog(models.Model):
     country = models.CharField(max_length=200, default="")
     city = models.CharField(max_length=200, default="")
 
+
+class BlockedIP(models.Model):
+    ip_address = models.CharField(max_length=200)
