@@ -7,13 +7,17 @@ class LogRequestDetailsMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
+    
     def __call__(self, request):
         ip_address, _ = get_client_ip(request)
         path = request.path
+        location = getattr(request, 'geolocation', {}) or {}
 
         log = RequestLog(
             ip_address=ip_address,
-            path=path
+            path=path,
+            country=location.get('country', 'Unknown'),
+            city = location.get('city', 'Unknown')
         )
         log.save()
 

@@ -3,3 +3,4 @@ django-redis
 djangorestframework
 django-ipware
 django-ratelimit
+django-ip-geolocation
